@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Retailer {
+  SKLAVENITIS
+  AB_VASSILOPOULOS
+  LIDL
+  MY_MARKET
+  MASOUTIS
+  GALAXIAS
+  MARKET_IN
+  KRITIKOS
+}
+
+model Deal {
+  id                 Int       @id @default(autoincrement())
+  retailer           Retailer
+  title              String
+  description        String?
+  productUrl         String
+  imageUrl           String?
+  salePrice          Decimal?  @db.Decimal(10, 2)
+  saleCurrency       String?   @default("EUR")
+  discountedPrice    Decimal?  @db.Decimal(10, 2)
+  discountedCurrency String?   @default("EUR")
+  discountPercentage Float?
+  stockStatus        String?
+  validFrom          DateTime?
+  validUntil         DateTime?
+  externalId         String?   @unique
+  category           String?
+  tags               String[]
+  metadata           Json?
+  scrapedAt          DateTime  @default(now())
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@index([retailer, productUrl])
+}
+
+model Event {
+  id             Int       @id @default(autoincrement())
+  retailer       Retailer?
+  title          String
+  description    String?
+  location       String?
+  imageUrl       String?
+  sourceUrl      String?   @unique
+  startDate      DateTime
+  endDate        DateTime?
+  category       String?
+  tags           String[]
+  metadata       Json?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
